@@ -11,7 +11,7 @@ import random
 import time
 
 # replace this code with something prompting for user to enter number of queens desired
-n = 100
+n = 4
 
 class Square:
     def __init__(self, state, x, y):
@@ -20,8 +20,10 @@ class Square:
         self.y = y
 
     def update_square(self, new_state):
-        if(self.state != -1):#it's not a queen
+        if(self.state != -1):#it's not a queen - update
             self.state += new_state
+        elif(new_state == 0):# remove the queen
+            self.state = 0
 
     def get_state(self):
         if(self.state == -1):
@@ -57,41 +59,54 @@ class Board:
             print((*a_row), sep='  ')
         print('--------------------------------------------------------')
 
-    def update_board(self, a_queen):
+    def update_board(self, a_queen, flag):
         q_position = a_queen.get_position()
         row = q_position[0]
         col = q_position[1]
-        #update queen square
-        self.board_squares[row, col].update_square(-1)
+        up = 1
+        q_up = -1
+        if(flag != 1):#remove the queen
+            up = -1
+            q_up = 0
+            #self.board_squares[row,col].update_square(0)
+            #print(self.board_squares[row,col].get_state())
+        #else:
+            # update the queen space
+            #self.board_squares[row, col].update_square(-1)
+            #print(self.board_squares[row,col].get_state())
         # update rows and cols
+        self.board_squares[row,col].update_square(q_up)
         for i in range(self.n):
-            self.board_squares[i, col].update_square(1)
-            self.board_squares[row, i].update_square(1)
+            self.board_squares[i, col].update_square(up)
+            self.board_squares[row, i].update_square(up)
+            #print(self.board_squares[row,col].get_state())
+        self.board_squares[row,col].update_square(q_up)
         # update diagonals
         x_dn = row
         y_up = col
         while(((x_dn-1) >= 0) and ((y_up+1) < self.n)):
             x_dn -= 1
             y_up += 1
-            self.board_squares[x_dn, y_up].update_square(1)
+            self.board_squares[x_dn, y_up].update_square(up)
         x_dn = row
         y_dn = col
         while(((x_dn-1) >= 0) and ((y_dn-1) >= 0)):
             x_dn -= 1
             y_dn -= 1
-            self.board_squares[x_dn, y_dn].update_square(1)
+            self.board_squares[x_dn, y_dn].update_square(up)
         x_up = row
         y_up = col
         while(((x_up+1) < self.n) and ((y_up+1) < self.n)):
             x_up += 1
             y_up += 1
-            self.board_squares[x_up, y_up].update_square(1)
+            self.board_squares[x_up, y_up].update_square(up)
         x_up = row
         y_dn = col
         while(((x_up+1) < self.n) and ((y_dn-1) >= 0)):
             x_up += 1
             y_dn -= 1
-            self.board_squares[x_up, y_dn].update_square(1)
+            self.board_squares[x_up, y_dn].update_square(up)
+        #print(self.board_squares[row,col].get_state())
 
     # build a recursive instead of iterative function for this later
     def solve(self, num_queens, board):
@@ -113,8 +128,15 @@ class Board:
             if not free_space:
                 print("COLLISION! - Rollback")#placeholder
                 # remove a queen
-
-                # spool everything back to last decision
+                bad_queen = queens_list.pop()
+                # remove the board
+                working_board = state_space_list[-1]
+                state_space_list = np.delete(state_space_list, -1)
+                # re-set to re-place the queen
+                working_board.update_board(bad_queen, -1)
+                bad_queen.update_position(-1, -1)# queen has no position -- must be placed again
+                # choose a new spot
+                #print(a_queen+1)
             else:
                 # update working board
                 working_board = current_board
@@ -127,12 +149,13 @@ class Board:
                 # add queen to list
                 queens_list.append(curr_queen)
                 # update the board spaces
-                working_board.update_board(curr_queen)
+                working_board.update_board(curr_queen, 1)
                 print(f'----------------Queen number: {a_queen+1}-------------------------')
                 working_board.print_board()
                 state_space_list = np.append(state_space_list, working_board)
             #update board
             current_board = working_board
+        return state_space_list
 
     # returns squares with constraint value == 0
     def get_free_spaces(self):
@@ -172,7 +195,11 @@ if __name__ == "__main__":
     print('----------------Starting board--------------------------')
     board.print_board()
     print('--------------------------------------------------------')
-    board.solve(n, board)
+
+    solution_set = board.solve(n, board)
+    solution = solution_set[-1]
+    print("Solution:\n")
+    solution.print_board()
 
 
 
