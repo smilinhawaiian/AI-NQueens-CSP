@@ -7,11 +7,12 @@
 # Ching-Wei Lin
 
 import numpy as np
+from matplotlib import pyplot as plt
 import random
 import time
+from timeit import default_timer as timer
 
 # replace this code with something prompting for user to enter number of queens desired
-n = 100
 
 class Square:
     def __init__(self, state, x, y):
@@ -50,11 +51,23 @@ class Board:
     def print_board(self):
         print('--------------------------------------------------------')
         for row in range(self.n):
-            #a_row = []
             a_row = np.empty((self.n,0), int)
             for col in range(self.n):
                 a_row = np.append(a_row, str(self.board_squares[row,col].get_state()))
             print((*a_row), sep='  ')
+        print('--------------------------------------------------------')
+
+
+    def print_final_board(self):
+        print('----------------Final Solution--------------------------')
+        for row in range(self.n):
+            a_row = np.empty((self.n,0), int)
+            for col in range(self.n):
+                if(str(self.board_squares[row,col].get_state()) == 'Q'):
+                    a_row = np.append(a_row, str(self.board_squares[row,col].get_state()))
+                else:
+                    a_row = np.append(a_row, str('-'))
+            print((*a_row), sep=' ')
         print('--------------------------------------------------------')
 
     def update_board(self, a_queen, flag):
@@ -148,8 +161,8 @@ class Board:
                 queens_list.update_queen(curr_queen, a_queen)
                 # update the board spaces
                 working_board.update_board(curr_queen, 1)
-                print(f'----------------Queen number: {a_queen}-------------------------')
-                working_board.print_board()
+                #print(f'----------------Queen number: {a_queen}-------------------------')
+                #working_board.print_board()
                 state_space_list = np.append(state_space_list, working_board)
             #update board
             current_board = working_board
@@ -160,8 +173,8 @@ class Board:
     def get_free_spaces(self, current_queen):
         available_spaces = []
         seen_list = current_queen.get_seen_positions()
-        if(len(seen_list) > 0):
-            print(seen_list) #placeholder
+        #if(len(seen_list) > 0):
+            #print(seen_list) #placeholder
         #for coord in seen_list:
         for row in range(self.n):
             for col in range(self.n):
@@ -230,17 +243,38 @@ class Queens:
 
 
 if __name__ == "__main__":
+
+    times = []
     #create a new board
-    board = Board(n)
-    print('----------------Starting board--------------------------')
-    board.print_board()
-    print('--------------------------------------------------------')
+    for n in range(4,  101):
+        start_time = timer()
+        board = Board(n)
+        #print('----------------Starting board--------------------------')
+        #board.print_board()
+        #print('--------------------------------------------------------')
+        solution_set = board.solve(1, board)
+        solution = solution_set[-1]
 
-    solution_set = board.solve(1, board)
-    solution = solution_set[-1]
-    print("Solution:\n")
-    solution.print_board()
+        end_time = timer()
+        time_taken = end_time - start_time
+        times.append(time_taken)
+
+        #print("Solution:\n")
+        #solution.print_final_board()
 
 
+    #time vs numberofqueens
+
+    #plotting
+    plt.figure(figsize=(100,100))
+    x = range(4, 500)#time intervals to test x queens each -- "eggs"
+    plt.title('Testing N queens')
+    plt.plot(x, times)
+    plt.xlabel("Number of Queens")
+    plt.ylabel("Time taken (Seconds)")
+    plt.savefig('Time to completion for various N-Queen Puzzles using Constraint Propagation.png', bbox_inches='tight')
+
+
+    plt.show() # stops the program! Only do at the end
 
 
