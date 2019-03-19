@@ -12,7 +12,6 @@ import random
 import time
 from timeit import default_timer as timer
 
-# replace this code with something prompting for user to enter number of queens desired
 
 class Square:
     def __init__(self, state, x, y):
@@ -59,7 +58,7 @@ class Board:
 
 
     def print_final_board(self):
-        print('----------------Final Solution--------------------------')
+        #print('----------------Final Solution--------------------------')
         for row in range(self.n):
             a_row = np.empty((self.n,0), int)
             for col in range(self.n):
@@ -67,8 +66,8 @@ class Board:
                     a_row = np.append(a_row, str(self.board_squares[row,col].get_state()))
                 else:
                     a_row = np.append(a_row, str('-'))
-            print((*a_row), sep=' ')
-        print('--------------------------------------------------------')
+            print((*a_row), sep='')
+        #print('--------------------------------------------------------')
 
     def update_board(self, a_queen, flag):
         q_position = a_queen.get_position()
@@ -132,7 +131,7 @@ class Board:
             # find possible free locations
             free_space = current_board.get_free_spaces(curr_queen)
             if not free_space:
-                print("COLLISION! - Rollback")#placeholder
+                #print("COLLISION! - Rollback")#placeholder
                 # remove a queen
                 bad_queen = curr_queen
                 # remove the board
@@ -145,10 +144,7 @@ class Board:
                 # choose a new spot   #RECURSIVE
                 queen_to_replace = a_queen - 1
                 queens_left = self.n - queen_to_replace - 1
-                print(f"queens left: {queens_left}")
-                #returned_list = np.empty((self.n,0),Board)
-                #returned_list = board.solve(a_queen-1, working_board)
-                #state_space_list = np.append(state_space_list, returned_list)
+                #print(f"queens left: {queens_left}")
             else:
                 # update working board
                 working_board = current_board
@@ -173,9 +169,6 @@ class Board:
     def get_free_spaces(self, current_queen):
         available_spaces = []
         seen_list = current_queen.get_seen_positions()
-        #if(len(seen_list) > 0):
-            #print(seen_list) #placeholder
-        #for coord in seen_list:
         for row in range(self.n):
             for col in range(self.n):
                 if((self.board_squares[row,col].get_state()) == 0):
@@ -184,9 +177,7 @@ class Board:
 
 
 class Queen:
-    #def __init__(self, my_number):
     def __init__(self):
-        #self.my_number = my_number# which queen am I - do I need this?
         self.my_row = -1
         self.my_col = -1
         x = self.my_row
@@ -239,14 +230,15 @@ class Queens:
     def update_queen(self, queen, index):
         position = queen.get_position()
         (self.queens_list[index]).update_position(position[0], position[1])
-        #queen = self.queens_list[index]
 
 
 if __name__ == "__main__":
 
+    min_val = 150
+    max_val = 151
     times = []
     #create a new board
-    for n in range(4,  101):
+    for n in range(min_val,  max_val):
         start_time = timer()
         board = Board(n)
         #print('----------------Starting board--------------------------')
@@ -259,22 +251,22 @@ if __name__ == "__main__":
         time_taken = end_time - start_time
         times.append(time_taken)
 
-        #print("Solution:\n")
-        #solution.print_final_board()
+        print("Solution:\n")
+        solution.print_final_board()
 
 
     #time vs numberofqueens
-
+"""
     #plotting
     plt.figure(figsize=(100,100))
-    x = range(4, 500)#time intervals to test x queens each -- "eggs"
+    x = range(4, max_val)#time intervals to test x queens each -- "eggs"
     plt.title('Testing N queens')
     plt.plot(x, times)
     plt.xlabel("Number of Queens")
     plt.ylabel("Time taken (Seconds)")
-    plt.savefig('Time to completion for various N-Queen Puzzles using Constraint Propagation.png', bbox_inches='tight')
+    plt.savefig('NPuzzle_With_Constraint_Propagation_Performance_Comparison.png', bbox_inches='tight')
 
 
     plt.show() # stops the program! Only do at the end
-
+"""
 
