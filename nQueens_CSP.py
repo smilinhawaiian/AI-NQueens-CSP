@@ -234,8 +234,8 @@ class Queens:
 
 if __name__ == "__main__":
 
-    min_val = 150
-    max_val = 151
+    min_val = 250
+    max_val = 251
     times = []
     #create a new board
     for n in range(min_val,  max_val):
