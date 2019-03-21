@@ -131,7 +131,7 @@ class Board:
             # find possible free locations
             free_space = current_board.get_free_spaces(curr_queen)
             if not free_space:
-                #print("COLLISION! - Rollback")#placeholder
+                #print("COLLISION! - Rollback")
                 # remove a queen
                 bad_queen = curr_queen
                 # remove the board
@@ -234,9 +234,10 @@ class Queens:
 
 if __name__ == "__main__":
 
-    min_val = 250
-    max_val = 251
+    min_val = 4
+    max_val = 100
     times = []
+    single_run_max = 250
     #create a new board
     for n in range(min_val,  max_val):
         start_time = timer()
@@ -251,16 +252,19 @@ if __name__ == "__main__":
         time_taken = end_time - start_time
         times.append(time_taken)
 
-        print("Solution:\n")
-        solution.print_final_board()
+    single_board = Board(single_run_max)
+    single_solution_set = single_board.solve(1,single_board)
+    single_solution = single_solution_set[-1]
+    print(f"Solution for {single_run_max} Queens:\n")
+    solution.print_final_board()
 
 
-    #time vs numberofqueens
-"""
+    #time vs numberofqueens puzzle solved
+
     #plotting
     plt.figure(figsize=(100,100))
-    x = range(4, max_val)#time intervals to test x queens each -- "eggs"
-    plt.title('Testing N queens')
+    x = range(min_val, max_val)#time intervals to test x queens each -- "eggs"
+    plt.title('Testing 4-100 queens')
     plt.plot(x, times)
     plt.xlabel("Number of Queens")
     plt.ylabel("Time taken (Seconds)")
@@ -268,5 +272,5 @@ if __name__ == "__main__":
 
 
     plt.show() # stops the program! Only do at the end
-"""
+
 
